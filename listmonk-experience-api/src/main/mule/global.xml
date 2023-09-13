@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="ff37b3d5-dcab-48db-931b-d3fa9c516fb4" basePath="/api/listmonk/papi" >
+		<http:request-connection host="localhost" port="8082" >
+			<http:authentication >
+				<http:basic-authentication username="${secure::papi.username}" password="${secure::papi.password}" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="e90907cb-7029-4f1e-8181-e3b81043a42b" file="${env}-secure.properties" key="${decrypt-key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<api-gateway:autodiscovery apiId="18923711" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="99dc77e2-8546-4f89-b96f-5ee30b806073" flowRef="listmonk-eapi-main" />
+</mule>
