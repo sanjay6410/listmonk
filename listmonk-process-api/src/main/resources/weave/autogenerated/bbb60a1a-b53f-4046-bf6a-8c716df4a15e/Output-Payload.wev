@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_bbb60a1a_b53f_4046_bf6a_8c716df4a15e_Output_Payload = {
+  updated_at?: String, 
+  name: String, 
+  created_at?: String, 
+  id?: Number, 
+  email: String, 
+  status: String, 
+  _?: Any
+}
+
