@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="requestresponse" format="json">
+      <types:shape format="weave" example="examples/getAllSubscribers-2.json"><![CDATA[%dw 2.0
+
+type requestresponse = {|
+  data: {|
+    results: Array<{|      id: Number {"typeId": "int"},       created_at: String,       updated_at: String,       uuid: String,       email: String,       name: String,       attribs: {|  |},       status: String,       lists: Array<Any>
+    |}>, 
+    query: String, 
+    total: Number {"typeId": "int"}, 
+    per_page: Number {"typeId": "int"}, 
+    page: Number {"typeId": "int"}
+  |}
+|} {"example": "{\\\"data\\\":{\\\"results\\\":[{\\\"id\\\":4,\\\"created_at\\\":\\\"2023-08-24T13:01:20.966888+05:30\\\",\\\"updated_at\\\":\\\"2023-08-24T13:06:40.527646+05:30\\\",\\\"uuid\\\":\\\"a0700831-146a-4c70-bcc6-4d2d679c1bba\\\",\\\"email\\\":\\\"subsriber@domain.com\\\",\\\"name\\\":\\\"The Subscriber\\\",\\\"attribs\\\":{},\\\"status\\\":\\\"blocklisted\\\",\\\"lists\\\":[]},{\\\"id\\\":3,\\\"created_at\\\":\\\"2023-08-23T15:21:01.780573+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:33:43.423662+05:30\\\",\\\"uuid\\\":\\\"bad97b23-6086-4b46-bafd-0b186174c0d1\\\",\\\"email\\\":\\\"sanjayguptha13064@gmail.com\\\",\\\"name\\\":\\\"Sanjay\\\",\\\"attribs\\\":{},\\\"status\\\":\\\"enabled\\\",\\\"lists\\\":[{\\\"subscription_status\\\":\\\"unconfirmed\\\",\\\"subscription_created_at\\\":\\\"2023-08-23T15:21:01.780573+05:30\\\",\\\"subscription_updated_at\\\":\\\"2023-08-23T15:21:01.780573+05:30\\\",\\\"subscription_meta\\\":{},\\\"id\\\":1,\\\"uuid\\\":\\\"668d4dfc-1bd4-4d5d-b8ec-2a9a00dca7fc\\\",\\\"name\\\":\\\"Default list\\\",\\\"type\\\":\\\"private\\\",\\\"optin\\\":\\\"single\\\",\\\"tags\\\":[\\\"test\\\"],\\\"description\\\":\\\"\\\",\\\"created_at\\\":\\\"2023-08-23T15:08:58.100255+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:08:58.100255+05:30\\\"}]},{\\\"id\\\":2,\\\"created_at\\\":\\\"2023-08-23T15:08:58.139503+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:08:58.139503+05:30\\\",\\\"uuid\\\":\\\"76e12e11-ea9b-4edb-9608-4920331ade26\\\",\\\"email\\\":\\\"anon@example.com\\\",\\\"name\\\":\\\"Anon Doe\\\",\\\"attribs\\\":{\\\"city\\\":\\\"Bengaluru\\\",\\\"good\\\":true,\\\"type\\\":\\\"unknown\\\"},\\\"status\\\":\\\"enabled\\\",\\\"lists\\\":[{\\\"subscription_status\\\":\\\"unconfirmed\\\",\\\"subscription_created_at\\\":\\\"2023-08-23T15:08:58.139503+05:30\\\",\\\"subscription_updated_at\\\":\\\"2023-08-23T15:08:58.139503+05:30\\\",\\\"subscription_meta\\\":{},\\\"id\\\":2,\\\"uuid\\\":\\\"c43ffd66-53e0-4c67-8d32-1cef39709dc8\\\",\\\"name\\\":\\\"Opt-in list\\\",\\\"type\\\":\\\"public\\\",\\\"optin\\\":\\\"double\\\",\\\"tags\\\":[\\\"test\\\"],\\\"description\\\":\\\"\\\",\\\"created_at\\\":\\\"2023-08-23T15:08:58.107191+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:08:58.107191+05:30\\\"}]},{\\\"id\\\":1,\\\"created_at\\\":\\\"2023-08-23T15:08:58.107566+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:08:58.107566+05:30\\\",\\\"uuid\\\":\\\"383022d1-1576-48a5-8b30-b2eccd1e7c89\\\",\\\"email\\\":\\\"john@example.com\\\",\\\"name\\\":\\\"John Doe\\\",\\\"attribs\\\":{\\\"city\\\":\\\"Bengaluru\\\",\\\"good\\\":true,\\\"type\\\":\\\"known\\\"},\\\"status\\\":\\\"enabled\\\",\\\"lists\\\":[{\\\"subscription_status\\\":\\\"unconfirmed\\\",\\\"subscription_created_at\\\":\\\"2023-08-23T15:08:58.107566+05:30\\\",\\\"subscription_updated_at\\\":\\\"2023-08-23T15:08:58.107566+05:30\\\",\\\"subscription_meta\\\":{},\\\"id\\\":1,\\\"uuid\\\":\\\"668d4dfc-1bd4-4d5d-b8ec-2a9a00dca7fc\\\",\\\"name\\\":\\\"Default list\\\",\\\"type\\\":\\\"private\\\",\\\"optin\\\":\\\"single\\\",\\\"tags\\\":[\\\"test\\\"],\\\"description\\\":\\\"\\\",\\\"created_at\\\":\\\"2023-08-23T15:08:58.100255+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:08:58.100255+05:30\\\"}]}],\\\"query\\\":\\\"\\\",\\\"total\\\":4,\\\"per_page\\\":20,\\\"page\\\":1}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="response" format="json">
+      <types:shape format="weave" example="examples/getAllSubscribersresponse.json"><![CDATA[%dw 2.0
+
+type response = Array<{|  id: Number {"typeId": "int"},   email: String,   status: String,   name: String,   created_at: String,   updated_at: String|}> {"example": "[{\\\"id\\\":1,\\\"email\\\":\\\"sanjayguptha@gmail.com\\\",\\\"status\\\":\\\"enabled\\\",\\\"name\\\":\\\"sanjay\\\",\\\"created_at\\\":\\\"2023-08-23T15:21:01.780573+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:21:01.780573+05:30\\\"},{\\\"id\\\":2,\\\"email\\\":\\\"rsguptha@gmail.com\\\",\\\"status\\\":\\\"enabled\\\",\\\"name\\\":\\\"rs guptha\\\",\\\"created_at\\\":\\\"2023-08-23T15:21:01.780573+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:21:01.780573+05:30\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="getSubscriber" format="json">
+      <types:shape format="weave" example="examples/getSubscriberById.json"><![CDATA[%dw 2.0
+
+type getSubscriber = {|
+  data: {|
+    id: Number {"typeId": "int"}, 
+    created_at: String, 
+    updated_at: String, 
+    uuid: String, 
+    email: String, 
+    name: String, 
+    attribs: {|
+      city: String, 
+      good: Boolean, 
+      "type": String
+    |}, 
+    status: String, 
+    lists: Array<{|      subscription_status: String,       subscription_created_at: String,       subscription_updated_at: String,       subscription_meta: {|  |},       id: Number {"typeId": "int"},       uuid: String,       name: String,       "type": String,       optin: String,       tags: Array<String>, 
+      description: String, 
+      created_at: String, 
+      updated_at: String
+    |}>
+  |}
+|} {"example": "{\\\"data\\\":{\\\"id\\\":1,\\\"created_at\\\":\\\"2023-08-23T15:08:58.107566+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:08:58.107566+05:30\\\",\\\"uuid\\\":\\\"383022d1-1576-48a5-8b30-b2eccd1e7c89\\\",\\\"email\\\":\\\"john@example.com\\\",\\\"name\\\":\\\"John Doe\\\",\\\"attribs\\\":{\\\"city\\\":\\\"Bengaluru\\\",\\\"good\\\":true,\\\"type\\\":\\\"known\\\"},\\\"status\\\":\\\"enabled\\\",\\\"lists\\\":[{\\\"subscription_status\\\":\\\"unconfirmed\\\",\\\"subscription_created_at\\\":\\\"2023-08-23T15:08:58.107566+05:30\\\",\\\"subscription_updated_at\\\":\\\"2023-08-23T15:08:58.107566+05:30\\\",\\\"subscription_meta\\\":{},\\\"id\\\":1,\\\"uuid\\\":\\\"668d4dfc-1bd4-4d5d-b8ec-2a9a00dca7fc\\\",\\\"name\\\":\\\"Default list\\\",\\\"type\\\":\\\"private\\\",\\\"optin\\\":\\\"single\\\",\\\"tags\\\":[\\\"test\\\"],\\\"description\\\":\\\"\\\",\\\"created_at\\\":\\\"2023-08-23T15:08:58.100255+05:30\\\",\\\"updated_at\\\":\\\"2023-08-23T15:08:58.100255+05:30\\\"}]}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bbb60a1a-b53f-4046-bf6a-8c716df4a15e/Input-Payload.wev" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[%dw 2.0
+
+type auto_bbb60a1a_b53f_4046_bf6a_8c716df4a15e_Input_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bbb60a1a-b53f-4046-bf6a-8c716df4a15e/Input-Attributes.wev" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[%dw 2.0
+
+type auto_bbb60a1a_b53f_4046_bf6a_8c716df4a15e_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| id: String |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bbb60a1a-b53f-4046-bf6a-8c716df4a15e/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[%dw 2.0
+
+type auto_bbb60a1a_b53f_4046_bf6a_8c716df4a15e_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/bbb60a1a-b53f-4046-bf6a-8c716df4a15e/Output-Payload.wev" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[%dw 2.0
+
+type auto_bbb60a1a_b53f_4046_bf6a_8c716df4a15e_Output_Payload = {
+  updated_at?: String, 
+  name: String, 
+  created_at?: String, 
+  id?: Number, 
+  email: String, 
+  status: String, 
+  _?: Any
+}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bbb60a1a-b53f-4046-bf6a-8c716df4a15e/Output-Attributes.wev" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[%dw 2.0
+
+type auto_bbb60a1a_b53f_4046_bf6a_8c716df4a15e_Output_Attributes = {|
+  statusCode: Number, 
+  reasonPhrase: String, 
+  headers: { _?: String }
+|} {"typeAlias": "HttpResponseAttributes",
+"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Variables-subscriberId" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bbb60a1a-b53f-4046-bf6a-8c716df4a15e/Output-Variables-subscriberId.wev" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[%dw 2.0
+
+type auto_bbb60a1a_b53f_4046_bf6a_8c716df4a15e_Output_Variables_subscriberId = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bbb60a1a-b53f-4046-bf6a-8c716df4a15e/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[%dw 2.0
+
+type auto_bbb60a1a_b53f_4046_bf6a_8c716df4a15e_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="d68eda29-bd0e-4cd3-a35b-9869d6dc2ce4"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#399a5ad9-e4c7-4ebe-9ca4-174eba90796d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="requestresponse"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="response"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#742d7f16-40f3-49e0-a5b7-8c4706f0baa1">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="getSubscriber"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#bbb60a1a-b53f-4046-bf6a-8c716df4a15e">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Input-Payload"/>
+          <types:attributes type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Payload"/>
+          <types:attributes type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Variables-httpStatus"/>
+          <types:variable name="subscriberId" type="auto_bbb60a1a-b53f-4046-bf6a-8c716df4a15e_Output-Variables-subscriberId"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

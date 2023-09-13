@@ -1,0 +1,116 @@
+{
+    "data": {
+        "results": [
+            {
+                "id": 4,
+                "created_at": "2023-08-24T13:01:20.966888+05:30",
+                "updated_at": "2023-08-24T13:06:40.527646+05:30",
+                "uuid": "a0700831-146a-4c70-bcc6-4d2d679c1bba",
+                "email": "subsriber@domain.com",
+                "name": "The Subscriber",
+                "attribs": {},
+                "status": "blocklisted",
+                "lists": []
+            },
+            {
+                "id": 3,
+                "created_at": "2023-08-23T15:21:01.780573+05:30",
+                "updated_at": "2023-08-23T15:33:43.423662+05:30",
+                "uuid": "bad97b23-6086-4b46-bafd-0b186174c0d1",
+                "email": "sanjayguptha13064@gmail.com",
+                "name": "Sanjay",
+                "attribs": {},
+                "status": "enabled",
+                "lists": [
+                    {
+                        "subscription_status": "unconfirmed",
+                        "subscription_created_at": "2023-08-23T15:21:01.780573+05:30",
+                        "subscription_updated_at": "2023-08-23T15:21:01.780573+05:30",
+                        "subscription_meta": {},
+                        "id": 1,
+                        "uuid": "668d4dfc-1bd4-4d5d-b8ec-2a9a00dca7fc",
+                        "name": "Default list",
+                        "type": "private",
+                        "optin": "single",
+                        "tags": [
+                            "test"
+                        ],
+                        "description": "",
+                        "created_at": "2023-08-23T15:08:58.100255+05:30",
+                        "updated_at": "2023-08-23T15:08:58.100255+05:30"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "created_at": "2023-08-23T15:08:58.139503+05:30",
+                "updated_at": "2023-08-23T15:08:58.139503+05:30",
+                "uuid": "76e12e11-ea9b-4edb-9608-4920331ade26",
+                "email": "anon@example.com",
+                "name": "Anon Doe",
+                "attribs": {
+                    "city": "Bengaluru",
+                    "good": true,
+                    "type": "unknown"
+                },
+                "status": "enabled",
+                "lists": [
+                    {
+                        "subscription_status": "unconfirmed",
+                        "subscription_created_at": "2023-08-23T15:08:58.139503+05:30",
+                        "subscription_updated_at": "2023-08-23T15:08:58.139503+05:30",
+                        "subscription_meta": {},
+                        "id": 2,
+                        "uuid": "c43ffd66-53e0-4c67-8d32-1cef39709dc8",
+                        "name": "Opt-in list",
+                        "type": "public",
+                        "optin": "double",
+                        "tags": [
+                            "test"
+                        ],
+                        "description": "",
+                        "created_at": "2023-08-23T15:08:58.107191+05:30",
+                        "updated_at": "2023-08-23T15:08:58.107191+05:30"
+                    }
+                ]
+            },
+            {
+                "id": 1,
+                "created_at": "2023-08-23T15:08:58.107566+05:30",
+                "updated_at": "2023-08-23T15:08:58.107566+05:30",
+                "uuid": "383022d1-1576-48a5-8b30-b2eccd1e7c89",
+                "email": "john@example.com",
+                "name": "John Doe",
+                "attribs": {
+                    "city": "Bengaluru",
+                    "good": true,
+                    "type": "known"
+                },
+                "status": "enabled",
+                "lists": [
+                    {
+                        "subscription_status": "unconfirmed",
+                        "subscription_created_at": "2023-08-23T15:08:58.107566+05:30",
+                        "subscription_updated_at": "2023-08-23T15:08:58.107566+05:30",
+                        "subscription_meta": {},
+                        "id": 1,
+                        "uuid": "668d4dfc-1bd4-4d5d-b8ec-2a9a00dca7fc",
+                        "name": "Default list",
+                        "type": "private",
+                        "optin": "single",
+                        "tags": [
+                            "test"
+                        ],
+                        "description": "",
+                        "created_at": "2023-08-23T15:08:58.100255+05:30",
+                        "updated_at": "2023-08-23T15:08:58.100255+05:30"
+                    }
+                ]
+            }
+        ],
+        "query": "",
+        "total": 4,
+        "per_page": 20,
+        "page": 1
+    }
+}

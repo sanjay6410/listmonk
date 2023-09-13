@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "email": "sanjayguptha@gmail.com",
+    "status": "enabled",
+    "name": "sanjay",
+    "created_at": "2023-08-23T15:21:01.780573+05:30",
+    "updated_at": "2023-08-23T15:21:01.780573+05:30"
+  },
+  {
+    "id": 2,
+    "email": "rsguptha@gmail.com",
+    "status": "enabled",
+    "name": "rs guptha",
+    "created_at": "2023-08-23T15:21:01.780573+05:30",
+    "updated_at": "2023-08-23T15:21:01.780573+05:30"
+  }
+]

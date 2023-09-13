@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd">
+	<sub-flow name="encodeCredentialsToBase64SubFlow" doc:id="7a40df07-dabf-4811-828a-a425cb3ea18c" >
+		<logger level="INFO" doc:name="Flow Start" doc:id="7f47d4a8-cc24-466d-8c2f-9fe7f364a70e" message='#["Flow Start " ++ flow.name as String]' />
+		<set-variable value='#[%dw 2.0&#10;import * from dw::core::Binaries&#10;output text/plain&#10;//var username = "listmonk"&#10;//var password= "SpC1N0MJIHP89dEg"&#10;var username=Mule::p("secure::listmonk.username")&#10;var password=Mule::p("secure::listmonk.password")&#10;var credentials=username ++ ":" ++ password  &#10;---&#10;toBase64(credentials as Binary)]' doc:name="Auth header" doc:id="c16da6dc-494a-43b9-bee1-50881114f2d1" variableName="authHeaderValue" />
+		<logger level="INFO" doc:name="Flow End" doc:id="9dfa052b-80da-44b5-b8d4-4a14072c0cb8" message='#["Flow End " ++ flow.name as String]'/>
+	</sub-flow>
+	<flow name="getAllSubscribers" doc:id="52ead514-ca40-4bc1-8e7a-c1d8786759e2" >
+		<logger level="INFO" doc:name="Flow Start" doc:id="19ea2339-5fbb-46da-9f01-d987a31c30fe" message='#["Flow Start " ++ flow.name as String]' />
+		<flow-ref doc:name="Base64" doc:id="c8dfacf9-fd2e-41a0-9807-06f7ccca576c" name="encodeCredentialsToBase64SubFlow"/>
+		<http:request method="GET" doc:name="listmonk-getAllSubscribers" doc:id="9e9c1a82-de30-4011-8fb0-004bb3dec8f8" config-ref="HTTP_Request_configuration" path="/subscribers">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Basic " ++ vars.authHeaderValue as String
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="prepare response" doc:id="399a5ad9-e4c7-4ebe-9ca4-174eba90796d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.data.results map ((item, index) ->
+	{
+		"id":item.id,
+		"email": item.email,
+		"status": item.status,
+		"name": item.name,
+		"created_at":item.created_at,
+		"upated_at":item.updated_at
+	}
+)
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Flow End" doc:id="7a1b2049-4a9b-4be4-82f7-a62bda53f6d1" message='#["Flow End " ++ flow.name as String]'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ce3b24b5-c152-451a-86f3-c30e43b4a271" type="HTTP:CONNECTIVITY">
+				<ee:transform doc:name="Transform Message" doc:id="4a1837f8-b2ea-4362-a9bf-1dfae7c1dff0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9e38572d-df00-446e-b3cf-b769bae5ee6a" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="d6d86d3e-665a-4ebf-8f8e-f715c9205b39" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="getSubscriberWithId" doc:id="bbb60a1a-b53f-4046-bf6a-8c716df4a15e" >
+	<logger level="INFO" doc:name="Flow Start" doc:id="bb5417b6-ca5d-4515-b0f7-ec849efc19d0" message='#["Flow Start " ++ flow.name as String]' />
+		<flow-ref doc:name="Base64" doc:id="daab71f4-e94a-455b-abdf-788362e9322b" name="encodeCredentialsToBase64SubFlow" />
+		<set-variable value="#[attributes.uriParams.id]" doc:name="SubscriberId" doc:id="7ed541f1-fd38-4fdc-815d-cca60b458568" variableName="subscriberId"/>
+		<http:request method="GET" doc:name="listMonk-getSubscriberById" doc:id="0f37abf4-d3dd-411c-aa07-c954c96c5c7c" config-ref="HTTP_Request_configuration" path="/subscribers/{id}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Basic " ++ vars.authHeaderValue
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.subscriberId
+}]]]></http:uri-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="041a3a87-6980-4a59-837d-89a97d96bd67" >
+			<when expression="#[isEmpty(payload)]">
+				<ee:transform doc:name="Prepare Payload" doc:id="9688af41-50f9-47ae-8eda-5749693605ce" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 404,
+	"description": "subscriber not found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Prepare Payload" doc:id="742d7f16-40f3-49e0-a5b7-8c4706f0baa1">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var data=payload.data
+---
+{
+	"Id" : payload.data.id,
+	"email": data.email,
+	"name" : data.name,
+	"status": data.status,
+	"created_at": data.created_at,
+	"updated_at": data.updated_at
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Flow End" doc:id="5c6e9e1f-5546-4047-a79e-b143536db39e" message='#["Flow End " ++ flow.name as String]'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6af63c6c-4d55-44fc-9af0-3475a7eb8012" type="HTTP:BAD_REQUEST">
+				<ee:transform doc:name="Transform Message" doc:id="9cf2d2ab-e442-4058-bd41-b8c61c45419a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 404,
+	"message": "subscriber not found"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="ed97d164-c44c-4ce5-9b82-09b96acda1e6" type="HTTP:CONNECTIVITY" >
+				<ee:transform doc:name="Transform Message" doc:id="ccbd90a8-e01e-4df2-a64f-b3c19b1497e7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate2" doc:id="73e09f44-2e8f-488d-90a9-4e011ef6657f" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="b62dddbd-6d9b-4a3e-9dc8-0eb2ac859467" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="deleteSubscriberWithId" doc:id="666ea3a3-9a33-45b4-8fba-54957870b848" >
+	<logger level="INFO" doc:name="Flow Start" doc:id="8f8be79a-be3c-497f-8169-37e1bd1f046a" message='#["Flow Start " ++ flow.name as String]' />
+		<flow-ref doc:name="Base64" doc:id="2783b8fc-a709-4c54-97fd-56db42d419ae" name="encodeCredentialsToBase64SubFlow"/>
+		<set-variable value="#[attributes.uriParams.id]" doc:name="SubscriberId" doc:id="03df48eb-d73a-4951-a252-4105a221efde" variableName="subscriberId" />
+		<http:request method="DELETE" doc:name="listMonk-deleteSubscriberById" doc:id="1c7d0fb4-bb48-4ccb-8cc7-17a058394f0c" config-ref="HTTP_Request_configuration" path="/subscribers/{id}" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Basic " ++ vars.authHeaderValue
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.subscriberId
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Prepare payload" doc:id="8c1b1b1b-735f-4885-b3b3-7dfbe331bac2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": 200,
+  "description": "subscriber deleted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Flow End" doc:id="38d4d693-29c6-4200-b7ea-e513e59d9763" message='#["Flow End " ++ flow.name as String]'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="31425827-dabe-4332-b02d-cc793889eb78" type="HTTP:CONNECTIVITY" >
+				<ee:transform doc:name="Transform Message" doc:id="dcdec084-2ad3-4fa1-8ae2-e67b88992873" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="bb8fb820-0d6e-4782-9c43-1e24585c4743" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="7509592e-cb5e-4185-9eff-93161481e9cd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="updateSubscriberWithIdToBlockList" doc:id="34fb7001-d1d5-47c9-b493-75a748277a95" >
+	<logger level="INFO" doc:name="Flow Start" doc:id="5018aaef-1652-4385-a11a-ead9ad267084" message='#["Flow Start " ++ flow.name as String]' />
+		<flow-ref doc:name="Base64" doc:id="acc25b06-84a6-44f7-9fa3-a1b993ee03a5" name="encodeCredentialsToBase64SubFlow" />
+		<set-variable value="#[attributes.uriParams.id]" doc:name="SubscriberId" doc:id="e43416fa-2ba6-4c8b-b5ad-71adeddae01e" variableName="subscriberId" />
+		<http:request method="PUT" doc:name="listMonk-updateSubscriberByIdToBlockList" doc:id="725ea715-f008-473f-91ae-4eda13cf650d" config-ref="HTTP_Request_configuration" path="/subscribers/{id}/blocklist" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Basic " ++ vars.authHeaderValue
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.subscriberId
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Prepare payload" doc:id="11d59b48-8f61-40d9-b0da-5f1ffaa7a93e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": 200,
+  "description": "subscriber status changed to blocklisted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Flow End" doc:id="b04a2346-1025-4abc-9953-eb46a6e2464f" message='#["Flow End " ++ flow.name as String]'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="38740305-d099-4e92-a415-06bfc475de61" type="HTTP:CONNECTIVITY" >
+				<ee:transform doc:name="Transform Message" doc:id="a13a8f00-0f9d-4474-8164-bcbc67a38377" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="cb34fab7-b21c-4005-99d1-7172661ca72c" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="5a0b6c89-1187-439f-b64b-f1e6a3916445" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="createSubscriber" doc:id="505c1e90-59fe-484c-a67b-7c51b07ad79d" >
+	<logger level="INFO" doc:name="Flow Start" doc:id="3f2a811d-b3c0-4af9-926e-2060bf4bf161" message='#["Flow Start " ++ flow.name as String]' />
+		<flow-ref doc:name="Base64" doc:id="f3b04535-7a6c-4156-b675-07c297091b2a" name="encodeCredentialsToBase64SubFlow" />
+		<http:request method="POST" doc:name="CreateNewSubscriber" doc:id="20ddf5e7-9ae4-46d6-813e-755d06cc8808" config-ref="HTTP_Request_configuration" path="/subscribers">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Basic " ++ vars.authHeaderValue
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Prepare Payload" doc:id="56f566aa-535a-447e-9ec1-72c56ead4385" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Id": payload.data.id,
+	"created_at":payload.data.created_at,
+	"updated_at": payload.data.updated_at,
+	"email": payload.data.email,
+	"name": payload.data.name,
+	"status": payload.data.status
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Flow End" doc:id="9ec14ce9-f725-4407-9f2b-ed20e079e8ae" message='#["Flow End " ++ flow.name as String]'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c98d01b9-f303-4cb9-90f3-e0483b9617bb" type="HTTP:CONNECTIVITY" >
+				<ee:transform doc:name="Transform Message" doc:id="e404cfbc-a1e9-4b93-a472-41a6a4ff1174" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="862ced9b-6fa2-48ab-b985-75c793721a4d" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="1db170a1-1fbe-4727-b401-6c3708db4e3a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":500,
+	"description":"Connectivity Error"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
